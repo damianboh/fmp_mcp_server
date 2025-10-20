@@ -1,10 +1,10 @@
 # Financial Modeling Prep (FMP) MCP Server
 
-> A lightweight, production-ready **Model Context Protocol (MCP)** server that brings **real financial data** directly to your AI agents or LLM Apps — fundamentals, ratios, price data, transcripts, macro indicators, and more.
+> A lightweight, production-ready **Model Context Protocol (MCP)** server that brings **real financial data** directly to AI agents or LLM Apps — fundamentals, ratios, price data, transcripts, macro indicators, and more.
 
 ## Overview
 
-The **Financial Modeling Prep MCP Server** acts as a bridge between LLMs and the **Financial Modeling Prep (FMP)** API, offering a structured and safe interface to query real-world market and company data.
+The **Financial Modeling Prep MCP Server** acts as a bridge between AI agents or LLM Apps and the **Financial Modeling Prep (FMP)** API, offering a structured and safe interface to query real-world market and company data.
 
 This server gives you a single MCP endpoint your AI tools can call for:
 
