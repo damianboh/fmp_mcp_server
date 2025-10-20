@@ -165,7 +165,7 @@ https://1234-56-78-90-123.ngrok-free.app/mcp/
 1. Open **ChatGPT → Settings → Apps & Connectors → Developer Mode On**. You would need a paid (ChatGPT Plus) account for turning developer mode on.
    And you need this mode for creating and connecting to your own custom MCP server.
    
-   <img height="300" alt="image" src="https://github.com/user-attachments/assets/8d5cb0b8-6abc-48f9-b2d1-37f528e06eda" />
+   <img height="400" alt="image" src="https://github.com/user-attachments/assets/8d5cb0b8-6abc-48f9-b2d1-37f528e06eda" />
    
 3. Go back to Apps & Connectors and click **Create**
 4. Paste your tunnel URL:
@@ -173,7 +173,7 @@ https://1234-56-78-90-123.ngrok-free.app/mcp/
    https://whatever-subdomain-assigned-to-you.trycloudflare.com/mcp/
    ```
    
-  <img height="300" alt="image" src="https://github.com/user-attachments/assets/c48a4c4d-cd55-4e64-a5c8-8bcabfc6f618" />
+  <img height="600" alt="image" src="https://github.com/user-attachments/assets/c48a4c4d-cd55-4e64-a5c8-8bcabfc6f618" />
    
 4. ChatGPT will now auto-discover all available tools and resources:
    - `/stable/profile` → Company profile  
@@ -181,15 +181,17 @@ https://1234-56-78-90-123.ngrok-free.app/mcp/
    - `/stable/earning-call-transcript` → Earnings transcript  
    - `/stable/news` → Stock news  
 
-You can now ask questions like these (yay!):
-<img height="600" alt="image" src="https://github.com/user-attachments/assets/6bee7d34-42a4-4083-9cab-b8f16139d623" />
+You can now ask questions like these (yay!): 
+
+<img height="600" alt="image" src="https://github.com/user-attachments/assets/6bee7d34-42a4-4083-9cab-b8f16139d623" /><br><br>
 
 When ChatGPT tries to call a tool for the first time, you will need to click "Confirm" as shown below.
-<img height="600" alt="image" src="https://github.com/user-attachments/assets/2b1b340b-2da2-449a-b598-186b1e2a1846" />
+
+<img height="600" alt="image" src="https://github.com/user-attachments/assets/2b1b340b-2da2-449a-b598-186b1e2a1846" /><br><br>
 
 ### Examples of tool calls:
 
-<img height="600" alt="image" src="https://github.com/user-attachments/assets/78977129-7d3b-4b7f-b5cc-c0df5f5a71b6" />
+<img height="600" alt="image" src="https://github.com/user-attachments/assets/78977129-7d3b-4b7f-b5cc-c0df5f5a71b6" /><br><br>
 <img height="600" alt="image" src="https://github.com/user-attachments/assets/dbec8eee-227a-4c9a-bcef-5a5f0d65df19" />
 
 ChatGPT knows and can now call the correct FMP MCP tools.
