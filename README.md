@@ -222,7 +222,7 @@ ChatGPT knows and can now call the correct FMP MCP tools.
 - You’re building **RAG** or **agentic pipelines** that rely on finance data  
 ---
 
-## 🧪 Health Check
+## Health Check
 
 Verify the server is running:
 
