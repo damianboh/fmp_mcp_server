@@ -179,14 +179,14 @@ https://1234-56-78-90-123.ngrok-free.app/mcp/
    - `/stable/news` → Stock news  
 
 You can now ask questions like these (yay!):
-<img width="1388" height="1175" alt="image" src="https://github.com/user-attachments/assets/6bee7d34-42a4-4083-9cab-b8f16139d623" />
+<img height="600" alt="image" src="https://github.com/user-attachments/assets/6bee7d34-42a4-4083-9cab-b8f16139d623" />
 
 When ChatGPT tries to call a tool for the first time, you will need to click "Confirm" as shown below.
-<img width="1198" height="1169" alt="image" src="https://github.com/user-attachments/assets/2b1b340b-2da2-449a-b598-186b1e2a1846" />
+<img height="600" alt="image" src="https://github.com/user-attachments/assets/2b1b340b-2da2-449a-b598-186b1e2a1846" />
 
 Examples tool calls:
-<img width="1197" height="1173" alt="image" src="https://github.com/user-attachments/assets/78977129-7d3b-4b7f-b5cc-c0df5f5a71b6" />
-<img width="1100" height="1163" alt="image" src="https://github.com/user-attachments/assets/dbec8eee-227a-4c9a-bcef-5a5f0d65df19" />
+<img height="600" alt="image" src="https://github.com/user-attachments/assets/78977129-7d3b-4b7f-b5cc-c0df5f5a71b6" />
+<img height="600" alt="image" src="https://github.com/user-attachments/assets/dbec8eee-227a-4c9a-bcef-5a5f0d65df19" />
 
 ChatGPT knows and can now call the correct FMP MCP tools.
 
