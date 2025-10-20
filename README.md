@@ -1,6 +1,8 @@
-<img width="1011" height="602" alt="image" src="https://github.com/user-attachments/assets/7c8d3ff9-3ebc-467d-bea9-5a87b5162fce" /># Financial Modeling Prep (FMP) MCP Server
+# Financial Modeling Prep (FMP) MCP Server
 
 > A lightweight, production-ready **Model Context Protocol (MCP)** server that brings **real financial data** directly to your AI agents or LLM Apps — fundamentals, ratios, price data, transcripts, macro indicators, and more.
+
+<img width="1198" height="1169" alt="image" src="https://github.com/user-attachments/assets/d9396afe-4edd-4ca2-a9e3-5c74a5d85920" />
 
 ---
 
