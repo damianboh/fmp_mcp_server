@@ -29,18 +29,21 @@ Auth
 - Set `FMP_API_KEY` in your environment (falls back to "demo").
 """
 import os
-from typing import Any, Dict, Optional, Literal
+from typing import Any, Dict, Optional, Literal 
 
-import httpx
+import httpx # for returning more understandable errors
 from mcp.server.fastmcp import FastMCP
 
 FMP_BASE_URL = "https://financialmodelingprep.com/stable"
-DEFAULT_API_KEY = os.environ.get("FMP_API_KEY", "demo")
+# you need to get the FMP API key and store it in the FMP_API_KEY variable
+api_key = os.environ['FMP_API_KEY']
 
 # ---------------------------------------------------------------------------
 # Core HTTP helper
 # ---------------------------------------------------------------------------
-async def fmp_api_request(endpoint: str, params: Optional[Dict] = None, api_key: Optional[str] = None) -> Dict:
+# This is not a MCP tool, just a helper function that makes a request to FMP API via different endpoints
+# It also returns any errors that occur in a more detailed way that an LLM understands thanks to the httpx library
+async def fmp_api_request(endpoint: str, params: Optional[Dict] = None) -> Dict:
     """Make a request to the Financial Modeling Prep API under /stable.
 
     Automatically appends the API key, returns parsed JSON, and surfaces errors
@@ -49,74 +52,38 @@ async def fmp_api_request(endpoint: str, params: Optional[Dict] = None, api_key:
     """
     url = f"{FMP_BASE_URL}/{endpoint.lstrip('/')}"
     params = params.copy() if params else {}
-    params["apikey"] = api_key or DEFAULT_API_KEY
+    params["apikey"] = api_key
 
     try:
-        async with httpx.AsyncClient() as client:
+         async with httpx.AsyncClient() as client:
             resp = await client.get(url, params=params, timeout=30.0)
             resp.raise_for_status()
-            return resp.json()
+            data = resp.json()
+            # wrap response in a consistent structure for the LLM
+            return {
+                "success": True,
+                "data": data,
+                "count": len(data) if isinstance(data, list) else 1
+            }
     except httpx.HTTPStatusError as e:
-        return {"error": f"HTTP error: {e.response.status_code}", "message": str(e)}
+        return {
+            "success": False,
+            "error": f"HTTP error: {e.response.status_code}", 
+            "message": str(e),
+            "data": []
+        }
     except httpx.RequestError as e:
-        return {"error": "Request error", "message": str(e)}
+        return {"success": False, "error": "Request error", "message": str(e), "data": []}
     except Exception as e:
-        return {"error": "Unknown error", "message": str(e)}
+        return {"success": False, "error": "Unknown error", "message": str(e), "data": []}
+        
 
 # ---------------------------------------------------------------------------
-# MCP instance (stdio by default)
+# MCP instance
 # ---------------------------------------------------------------------------
 mcp = FastMCP("fmp")
 
-# ========================= RESOURCES & PROMPTS ==============================
-
-@mcp.resource("fmp:readme")
-def fmp_readme() -> str:
-    """
-    FMP MCP Server README
-
-    Use this server when:
-      • You need real financial data from Financial Modeling Prep (/stable):
-        company profiles, income statements, balance sheets, cash flows,
-        financial ratios, full daily OHLCV, earnings call transcripts,
-        macro indicators, economic calendar, stock news, or insider trades.
-      • The task mentions tickers (e.g., AAPL, MSFT, TSLA), fundamentals/valuation,
-        earnings transcripts, macro/CPI/Fed calendar, or insider transactions.
-
-    Not a fit when:
-      • You need order execution, brokerage actions, Level II order book, or real-time ticks.
-      • You need complete SEC filing documents beyond transcripts (use an SEC-focused tool).
-
-    Authentication:
-      • Set `FMP_API_KEY` (falls back to `demo` with tight limits).
-
-    Quick start:
-      • Try `company_profile(symbol="AAPL")` then `financial_ratios(symbol="AAPL")`.
-    """
-    return fmp_readme.__doc__
-
-
-@mcp.prompt("how_to_use_fmp")
-def how_to_use_fmp() -> str:
-    return (
-        "If the user asks for stock fundamentals, ratios, financial statements, "
-        "earnings call transcripts, macro indicators, economic calendars, insider trades, "
-        "or daily OHLCV, choose an FMP tool. Map user intent:\n"
-        "- Snapshot/company facts → company_profile\n"
-        "- Periodized P&L → income_statement\n"
-        "- Balance sheet items → balance_sheet\n"
-        "- Cash generation/free cash flow → cash_flow\n"
-        "- Ratios/valuation/liquidity → financial_ratios\n"
-        "- Daily price series → historical_price_eod_full\n"
-        "- Earnings call text → earnings_call_transcript\n"
-        "- Macro time series → economic_indicators\n"
-        "- Release schedule → economic_calendar\n"
-        "- Latest news / ticker-filtered news → stock_news_latest / stock_news_search\n"
-        "- Insider transactions → insider_trading_latest\n"
-        "Prefer the most specific tool; avoid calling multiple tools unless necessary."
-    )
-
-# ========================= TOOLS (ONLY YOUR ENDPOINTS) ======================
+# TOOLS
 
 @mcp.tool()
 async def company_profile(symbol: str) -> Any:
@@ -151,8 +118,6 @@ async def company_profile(symbol: str) -> Any:
       A 1-element list with the profile object as shown in your example.
     """
     return await fmp_api_request("profile", {"symbol": symbol})
-
-Period = Literal["annual", "quarter", "Q1", "Q2", "Q3", "Q4", "FY"]
 
 @mcp.tool()
 async def income_statement(symbol: str, limit: int = 5, period: str = "annual") -> Any:
@@ -398,7 +363,7 @@ async def economic_indicators(name: str, date_from: Optional[str] = None, date_t
 
 @mcp.tool()
 async def economic_calendar(date_from: Optional[str] = None, date_to: Optional[str] = None) -> Any:
-    """Economic Data Releases Calendar API — schedule of upcoming releases.
+    """Economic Data Releases Calendar API — schedule of upcoming and past releases.
 
     Use this when:
       • You want release times and details (country, impact, actual/estimate/previous).
@@ -507,6 +472,7 @@ async def insider_trading_latest(page: int = 0, limit: int = 100, date: Optional
       • You’re screening for notable insider activity.
 
     Don’t use when:
+      • You need ticker-filtered insider traders (use insider_trading_search with symbols).
       • You need ownership cap tables or institutional holders (different endpoints).
       • You want price series or ratios.
 
@@ -531,13 +497,68 @@ async def insider_trading_latest(page: int = 0, limit: int = 100, date: Optional
         params["date"] = date
     return await fmp_api_request("insider-trading/latest", params)
 
-# ----------------------------- HEALTH ---------------------------------------
 @mcp.tool()
-async def ping() -> Dict[str, Any]:
-    """Health check for this MCP server."""
-    return {"ok": True, "base_url": FMP_BASE_URL}
+async def insider_trading_search(
+    symbol: str,
+    page: int = 0,
+    limit: int = 100,
+    reporting_cik: Optional[str] = None,
+    company_cik: Optional[str] = None,
+    transaction_type: Optional[str] = None,
+) -> Any:
+    """Search Insider Trades API — filter insider activity by symbol or CIKs.
 
-# ---------------------------- ROUTER HINT -----------------------------------
+    Use this when:
+      • You want insider trades for a specific company/symbol (e.g., AAPL).
+      • You need to filter by reporting CIK, company CIK, or transaction type.
+      • You’re drilling into detailed insider activity for one name instead of the whole market.
+
+    Don’t use when:
+      • You just want the latest market-wide insider trades (use `insider_trading_latest` instead).
+      • You need ownership summaries or institutional holders (different endpoints).
+
+    Endpoint: `/stable/insider-trading/search`
+
+    What it provides:
+      • **Symbol & Company**: `symbol`, `companyCik`, `securityName`.
+      • **Transaction Details**: `filingDate`, `transactionDate`, `transactionType`
+        (e.g., `P-Purchase`, `S-Sale`), `securitiesTransacted`, `securitiesOwned`, `price`.
+      • **Insider Identity**: `reportingName`, `reportingCik`, `typeOfOwner`
+        (e.g., director, officer), `directOrIndirect`, `acquisitionOrDisposition`.
+      • **Regulatory Links**: Direct `url` to the SEC filing.
+
+    Args:
+      symbol:
+        Ticker symbol to search for (e.g., `"AAPL"`). Required by the API.
+      page:
+        Zero-based page index (max page ~100). Use this to paginate through large result sets.
+      limit:
+        Number of records per page (max 1000). Higher values reduce the number of requests.
+      reporting_cik:
+        Optional CIK of the insider (e.g., `"0001496686"`) to filter trades by a specific insider.
+      company_cik:
+        Optional CIK of the company (e.g., `"0000320193"`) to filter trades for a specific issuer.
+      transaction_type:
+        Optional transaction type filter (e.g., `"P-Purchase"`, `"S-Sale"`).
+
+    Returns:
+      A list of insider trades matching the provided filters.
+    """
+    params: Dict[str, Any] = {
+        "symbol": symbol,
+        "page": page,
+        "limit": limit,
+    }
+
+    if reporting_cik:
+        params["reportingCik"] = reporting_cik
+    if company_cik:
+        params["companyCik"] = company_cik
+    if transaction_type:
+        params["transactionType"] = transaction_type
+
+    return await fmp_api_request("insider-trading/search", params)
+
 @mcp.tool()
 async def when_should_i_use_fmp() -> dict:
     """Guidance tool — returns when this server is appropriate vs. other data sources."""
@@ -569,7 +590,8 @@ async def when_should_i_use_fmp() -> dict:
         }
     }
 
-# ======================== STREAMABLE HTTP (OPTIONAL) ========================
+
+# ======================== STREAMABLE HTTP ========================
 
 def main() -> None:
     """Run the MCP server via stdio (default), SSE, or streamable HTTP.
@@ -618,12 +640,8 @@ def main() -> None:
         streamable_mcp.tool()(stock_news_latest)
         streamable_mcp.tool()(stock_news_search)
         streamable_mcp.tool()(insider_trading_latest)
-        streamable_mcp.tool()(ping)
+        streamable_mcp.tool()(insider_trading_search)
         streamable_mcp.tool()(when_should_i_use_fmp)
-
-        # Register resource & prompt so clients can see global guidance
-        streamable_mcp.resource("fmp:readme")(fmp_readme)
-        streamable_mcp.prompt("how_to_use_fmp")(how_to_use_fmp)
 
         # ASGI app & health route
         app = streamable_mcp.streamable_http_app()
