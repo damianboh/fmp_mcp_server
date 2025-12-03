@@ -1,33 +1,3 @@
-"""
-FMP MCP Server (Python)
-
-This version exposes **only** the endpoints you specified, with detailed docstrings
-that incorporate your descriptions and examples.
-
-Included APIs (FMP /stable):
-  • Company Profile  -> /stable/profile
-  • Income Statement -> /stable/income-statement
-  • Balance Sheet    -> /stable/balance-sheet-statement
-  • Cash Flow        -> /stable/cash-flow-statement
-  • Financial Ratios -> /stable/ratios
-  • Stock Price & Volume (EOD full) -> /stable/historical-price-eod/full
-  • Earnings Transcript -> /stable/earning-call-transcript
-  • Economic Indicators -> /stable/economic-indicators
-  • Economic Calendar   -> /stable/economic-calendar
-  • Stock News (latest) -> /stable/news/stock-latest
-  • Search Stock News   -> /stable/news/stock
-  • Latest Insider Trading -> /stable/insider-trading/latest
-
-Run modes
----------
-- stdio (default): `python fmp_mcp_server.py`
-- SSE (streamable HTTP via FastMCP): `python fmp_mcp_server.py --transport sse`
-- Streamable HTTP (Starlette/Uvicorn): `python fmp_mcp_server.py --transport streamable-http --host 127.0.0.1 --port 8000`
-
-Auth
-----
-- Set `FMP_API_KEY` in your environment (falls back to "demo").
-"""
 import os
 from typing import Any, Dict, Optional, Literal 
 
