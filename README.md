@@ -68,12 +68,12 @@ The script supports **3 launch modes** via the `--transport` flag in your cmd co
 For local development and direct MCP use via CLI or ChatGPT desktop app.
 
 ```bash
-python src/fmp_mcp_server.py
+python fmp_mcp_server.py
 ```
 
 Equivalent to:
 ```bash
-python src/fmp_mcp_server.py --transport stdio
+python fmp_mcp_server.py --transport stdio
 ```
 
 This mode just communicates over standard input/output — ideal for embedding in local AI environments.
@@ -85,7 +85,7 @@ This mode just communicates over standard input/output — ideal for embedding i
 For streaming output via **FastMCP’s SSE transport**.
 
 ```bash
-python src/fmp_mcp_server.py --transport sse
+python fmp_mcp_server.py --transport sse
 ```
 
 This is used by frameworks like **LangChain MCP** or **OpenDevin** that consume event streams.
@@ -97,7 +97,7 @@ This is used by frameworks like **LangChain MCP** or **OpenDevin** that consume 
 Runs a **Starlette / Uvicorn** HTTP server for remote access (ideal for ChatGPT or cloud tunnels).
 
 ```bash
-python src/fmp_mcp_server.py --transport streamable-http --host 127.0.0.1 --port 8000
+python fmp_mcp_server.py --transport streamable-http --host 127.0.0.1 --port 8000
 ```
 
 You’ll see:
